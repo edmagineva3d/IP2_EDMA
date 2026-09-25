@@ -15,72 +15,57 @@ A simple API demonstrating Vertical Slice Architecture in .NET 10, built for edu
 | Validation     | FluentValidation                    |
 | CQRS           | Custom ICommand/IQuery (No MediatR) |
 | API Docs       | Scalar (No Swashbuckle)             |
-| Result Pattern | Domain.Common.Result\<T\>           |
+| Result Pattern | Domain.Common.Result<T>             |
 
 ---
 
 ## Project Structure
 
-```
+```text
 VerticalSlice/
 ├── VerticalSlice.sln
-├── Domain/                          # Entities (ZERO dependencies)
+├── Domain/
 │   ├── Common/
-│   │   ├── BaseEntity.cs           # Base class with Guid Id
-│   │   └── Result.cs               # Result<T> pattern
+│   │   ├── BaseEntity.cs
+│   │   └── Result.cs
 │   └── Entities/
 │       ├── Student.cs
 │       ├── Course.cs
 │       ├── Admission.cs
 │       └── AdmissionCourse.cs
-├── Application/                     # Handlers, Validators, Abstractions
+│
+├── Application/
 │   ├── Abstractions/
 │   │   ├── Data/
-│   │   │   └── IAppDbContext.cs    # Database abstraction
+│   │   │   └── IAppDbContext.cs
 │   │   └── Messaging/
-│   │       ├── ICommand.cs         # Write operations interface
-│   │       ├── ICommandHandler.cs  # Command handler interface
-│   │       ├── IQuery.cs           # Read operations interface
-│   │       └── IQueryHandler.cs    # Query handler interface
+│   │       ├── ICommand.cs
+│   │       ├── ICommandHandler.cs
+│   │       ├── IQuery.cs
+│   │       └── IQueryHandler.cs
+│   │
 │   └── Features/
 │       ├── Students/
 │       │   ├── CreateStudent/
-│       │   │   ├── CreateStudentCommand.cs
-│       │   │   ├── CreateStudentCommandHandler.cs
-│       │   │   ├── CreateStudentValidator.cs
-│       │   │   └── CreateStudentResponse.cs
 │       │   └── GetStudentById/
-│       │       ├── GetStudentByIdQuery.cs
-│       │       ├── GetStudentByIdQueryHandler.cs
-│       │       └── GetStudentByIdResponse.cs
+│       │
 │       ├── Courses/
 │       │   ├── CreateCourse/
-│       │   │   ├── CreateCourseCommand.cs
-│       │   │   ├── CreateCourseCommandHandler.cs
-│       │   │   ├── CreateCourseValidator.cs
-│       │   │   └── CreateCourseResponse.cs
 │       │   ├── GetCourseById/
-│       │   │   ├── GetCourseByIdQuery.cs
-│       │   │   ├── GetCourseByIdQueryHandler.cs
-│       │   │   └── GetCourseByIdResponse.cs
-│       │   └── UpdateCourse/
-│       │       ├── UpdateCourseCommand.cs
-│       │       ├── UpdateCourseCommandHandler.cs
-│       │       └── UpdateCourseValidator.cs
+│       │   ├── UpdateCourse/
+│       │   └── DeleteCourse/
+│       │       ├── DeleteCourseCommand.cs
+│       │       └── DeleteCourseCommandHandler.cs
+│       │
 │       └── Admissions/
 │           ├── CreateAdmission/
-│           │   ├── CreateAdmissionCommand.cs
-│           │   ├── CreateAdmissionCommandHandler.cs
-│           │   ├── CreateAdmissionValidator.cs
-│           │   └── CreateAdmissionResponse.cs
 │           └── GetAdmissionById/
-│               ├── GetAdmissionByIdQuery.cs
-│               ├── GetAdmissionByIdQueryHandler.cs
-│               └── GetAdmissionByIdResponse.cs
-├── Infrastructure/                  # EF Core, Persistence
+│
+├── Infrastructure/
 │   └── Persistence/
-│       └── AppDbContext.cs         # EF Core context
-└── Api/                             # Endpoints, DI, Extensions
+│       └── AppDbContext.cs
+│
+└── Api/
     ├── Features/
     │   ├── Students/
     │   │   └── StudentEndpoints.cs
@@ -96,203 +81,424 @@ VerticalSlice/
 
 ---
 
-## Getting Started
+# Getting Started
 
-### Prerequisites
+## Prerequisites
 
-- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
-- IDE: Visual Studio 2022, VS Code with C# extension, or JetBrains Rider
+* .NET 10 SDK
+* Visual Studio 2022, Visual Studio 2026, VS Code with C# extension, or JetBrains Rider
 
-### Installation
+## Run the API
 
-1. Clone the repository or navigate to the project folder:
+Open PowerShell in the project folder:
 
-   ```bash
-   cd VerticalSlice
-   ```
-
-2. Restore dependencies:
-
-   ```bash
-   dotnet restore
-   ```
-
-3. Run the API:
-
-   ```bash
-   dotnet run --project Api
-   ```
-
-4. Open Scalar UI in your browser:
-   ```
-   https://localhost:5205/scalar/v1
-   ```
-
----
-
-## API Endpoints
-
-### Students
-
-| Method | Endpoint             | Description          | Request Body                                  |
-| ------ | -------------------- | -------------------- | --------------------------------------------- |
-| POST   | `/api/students`      | Create a new student | `{ firstName, lastName, email, dateOfBirth }` |
-| GET    | `/api/students/{id}` | Get student by ID    | —                                             |
-| GET 	 | `/api/students` 		| Get all students 	   | —											   |
-
-### Courses
-
-| Method | Endpoint            | Description         | Request Body               |
-| ------ | ------------------- | ------------------- | -------------------------- |
-| POST   | `/api/courses`      | Create a new course | `{ title, code, credits }` |
-| GET    | `/api/courses/{id}` | Get course by ID    | —                          |
-| GET    | `/api/courses`       | Get all courses     | —                          |
-| PUT    | `/api/courses/{id}`  | Update an existing course | { title, code, credits } |
-
-### Admissions
-
-| Method | Endpoint               | Description                      | Request Body                               |
-| ------ | ---------------------- | -------------------------------- | ------------------------------------------ |
-| POST   | `/api/admissions`      | Create admission with courses    | `{ studentId, academicYear, courseIds[] }` |
-| GET    | `/api/admissions/{id}` | Get admission by ID with courses | —                                          |
-
----
-
-## Example Requests
-
-### Create Student
-
-```json
-POST /api/students
-{
-  "firstName": "John",
-  "lastName": "Santos",
-  "email": "john.doe@ccdi.com",
-  "dateOfBirth": "2000-01-15"
-}
+```powershell
+dotnet run
 ```
 
-### Create Course
+The API runs at:
 
-```json
-POST /api/courses
-{
-  "title": "Introduction to Programming",
-  "code": "CS101",
-  "credits": 3
-}
+```text
+http://localhost:5205
 ```
 
-### Create Admission
+Scalar:
 
-```json
-POST /api/admissions
-{
-  "studentId": "YOUR_STUDENT_ID",
-  "academicYear": "2026-2027",
-  "courseIds": [
-    "COURSE_ID_1",
-    "COURSE_ID_2"
-  ]
-}
+```text
+http://localhost:5205/scalar/v1
 ```
 
 ---
 
-## Architecture Rules
+# API Endpoints
+
+## Students
+
+| Method | Endpoint             | Description          |
+| ------ | -------------------- | -------------------- |
+| POST   | `/api/students`      | Create a new student |
+| GET    | `/api/students/{id}` | Get student by ID    |
+| GET    | `/api/students`      | Get all students     |
+
+## Courses
+
+| Method | Endpoint            | Description               |
+| ------ | ------------------- | ------------------------- |
+| POST   | `/api/courses`      | Create a new course       |
+| GET    | `/api/courses/{id}` | Get course by ID          |
+| GET    | `/api/courses`      | Get all courses           |
+| PUT    | `/api/courses/{id}` | Update an existing course |
+| DELETE | `/api/courses/{id}` | Delete a course           |
+
+## Admissions
+
+| Method | Endpoint               | Description                      |
+| ------ | ---------------------- | -------------------------------- |
+| POST   | `/api/admissions`      | Create admission with courses    |
+| GET    | `/api/admissions/{id}` | Get admission by ID with courses |
+
+---
+
+# Delete Course Feature
+
+The Delete Course feature was added for Lab Sheet 05.
+
+Endpoint:
+
+```text
+DELETE /api/courses/{id}
+```
+
+The feature uses a non-generic `Result` because a successful DELETE does not return response data.
+
+## Delete Behavior
+
+| Situation                              | Status Code      |
+| -------------------------------------- | ---------------- |
+| Course successfully deleted            | `204 No Content` |
+| Course does not exist                  | `404 Not Found`  |
+| Course is already used by an admission | `409 Conflict`   |
+
+A course that is already referenced by an admission cannot be deleted.
+
+---
+
+# PowerShell Testing Commands
+
+The following commands were used to test the API successfully.
+
+## 1. Get All Students
+
+```powershell
+curl.exe -s http://localhost:5205/api/students
+```
+
+## 2. Get All Courses
+
+```powershell
+curl.exe -s http://localhost:5205/api/courses
+```
+
+---
+
+# Screenshot 1 — Successful Delete
+
+First, create a temporary course:
+
+```powershell
+$body = @{
+    title = "Temporary Course"
+    code = "TM101"
+    credits = 3
+} | ConvertTo-Json
+
+Invoke-RestMethod -Uri "http://localhost:5205/api/courses" -Method Post -ContentType "application/json" -Body $body
+```
+
+Temporary Course ID:
+
+```text
+32107b50-6ab0-470f-83bf-3a3e6dee7940
+```
+
+Delete the temporary course:
+
+```powershell
+curl.exe -i -X DELETE http://localhost:5205/api/courses/32107b50-6ab0-470f-83bf-3a3e6dee7940
+```
+
+Expected result:
+
+```text
+HTTP/1.1 204 No Content
+```
+
+---
+
+# Screenshot 2 — Delete the Same Course Again
+
+Run the DELETE command again:
+
+```powershell
+curl.exe -i -X DELETE http://localhost:5205/api/courses/32107b50-6ab0-470f-83bf-3a3e6dee7940
+```
+
+Expected result:
+
+```text
+HTTP/1.1 404 Not Found
+```
+
+Example error:
+
+```json
+{
+  "status": 404,
+  "detail": "Course not found.",
+  "errorCode": "Course.NotFound"
+}
+```
+
+---
+
+# Screenshot 3 — Delete a Course in Use
+
+Get the current student list:
+
+```powershell
+curl.exe -s http://localhost:5205/api/students
+```
+
+Student ID used:
+
+```text
+f0e10c92-0bc8-435a-865c-f439e554f605
+```
+
+Get the course list:
+
+```powershell
+curl.exe -s http://localhost:5205/api/courses
+```
+
+Course ID used:
+
+```text
+8208724b-1e38-4d24-8a12-efe0323b65a8
+```
+
+Create an admission using the course:
+
+```powershell
+$admissionBody = @{
+    studentId = "f0e10c92-0bc8-435a-865c-f439e554f605"
+    academicYear = "2026-2027"
+    courseIds = @("8208724b-1e38-4d24-8a12-efe0323b65a8")
+} | ConvertTo-Json
+
+Invoke-RestMethod -Uri "http://localhost:5205/api/admissions" -Method Post -ContentType "application/json" -Body $admissionBody
+```
+
+Then try to delete the course:
+
+```powershell
+curl.exe -i -X DELETE http://localhost:5205/api/courses/8208724b-1e38-4d24-8a12-efe0323b65a8
+```
+
+Expected result:
+
+```text
+HTTP/1.1 409 Conflict
+```
+
+Example error:
+
+```json
+{
+  "status": 409,
+  "detail": "Cannot delete a course that is part of an existing admission.",
+  "errorCode": "Course.InUse"
+}
+```
+
+---
+
+# Screenshot 4 — Full CRUD Test
+
+After restarting the API to reset the InMemory database:
+
+```text
+Ctrl + C
+```
+
+Then:
+
+```powershell
+dotnet run
+```
+
+## Create
+
+```powershell
+$body = @{
+    title = "Full CRUD Test"
+    code = "FC101"
+    credits = 3
+} | ConvertTo-Json
+
+$created = Invoke-RestMethod -Uri "http://localhost:5205/api/courses" -Method Post -ContentType "application/json" -Body $body
+
+$ID = $created.id
+
+"Created: $ID"
+```
+
+## GET All
+
+
+$r = Invoke-WebRequest -Uri "http://localhost:5205/api/courses" -Method Get
+"GET all: $($r.StatusCode)"
+```
+
+## GET One
+
+```powershell
+$r = Invoke-WebRequest -Uri "http://localhost:5205/api/courses/$ID" -Method Get
+"GET one: $($r.StatusCode)"
+
+
+## PUT
+
+
+$updateBody = @{
+    title = "Updated Full CRUD Test"
+    code = "FC101"
+    credits = 4
+} | ConvertTo-Json
+
+$r = Invoke-WebRequest -Uri "http://localhost:5205/api/courses/$ID" -Method Put -ContentType "application/json" -Body $updateBody
+
+"PUT: $($r.StatusCode)"
+
+
+## DELETE
+
+
+$r = Invoke-WebRequest -Uri "http://localhost:5205/api/courses/$ID" -Method Delete
+
+"DELETE: $($r.StatusCode)"
+
+
+Successful output:
+
+
+Created: f2d99038-6912-409d-8af7-9704318488a6
+GET all: 200
+GET one: 200
+PUT: 200
+DELETE: 204
+
+
+---
+
+# Route Naming
+
+The API uses named routes for GET-by-ID endpoints:
+
+
+GetCourseById
+GetStudentById
+GetAdmissionById
+
+
+These route names are used consistently when generating URLs for the corresponding resources.
+
+---
+
+# Architecture Rules
 
 1. **Domain has ZERO external dependencies**
-2. **All data access through DbContext** — No repository pattern
-3. **Result\<T\> for business errors** — Not exceptions
-4. **Records for DTOs** — Primary constructors for DI
-5. **Always pass CancellationToken** through async chains
+2. **All data access through DbContext**
+3. **No Repository pattern**
+4. **Use Result/Result<T> for business errors**
+5. **Use records for DTOs**
+6. **Always pass CancellationToken through async chains**
+7. **Use commands for write operations**
+8. **Handlers contain the business logic**
+9. **Do not use controllers**
+10. **Do not use MediatR**
+11. **Do not delete courses that are referenced by admissions**
 
 ---
 
-## Key Concepts
+# Key Concepts
 
-### Vertical Slice Architecture
+## Vertical Slice Architecture
 
-Code is organized by feature (CreateStudent, GetCourseById), not by technical layer (Controllers, Services, Repositories). Each feature is self-contained in its own folder.
+Code is organized by feature instead of technical layers.
 
-### Result Pattern
+Examples:
 
-Instead of throwing exceptions, we return Result objects:
 
-```csharp
-// Success
+CreateStudent
+GetStudentById
+CreateCourse
+GetCourseById
+UpdateCourse
+DeleteCourse
+CreateAdmission
+GetAdmissionById
+
+
+Each feature contains the code needed for that specific operation.
+
+## Result Pattern
+
+Instead of throwing exceptions for expected business errors, the application returns Result objects.
+
+
 return Result<T>.Success(response);
 
-// Failure
-return Result<T>.Failure(Error.NotFound("Code", "Message"));
-```
+For failures:
 
-### Custom CQRS
 
-Simple interfaces without external dependencies:
+return Result<T>.Failure(
+    Error.NotFound("Code", "Message")
+);
 
-- `ICommand<TResponse>` — for write operations
-- `IQuery<TResponse>` — for read operations
-- `ICommandHandler<TCommand, TResponse>` — handles commands
-- `IQueryHandler<TQuery, TResponse>` — handles queries
 
-### FluentValidation
+## Custom CQRS
 
-Validates input before it reaches the handler:
+The project uses custom CQRS interfaces without MediatR.
 
-```csharp
-public sealed class CreateStudentValidator : AbstractValidator<CreateStudentCommand>
-{
-    public CreateStudentValidator()
-    {
-        RuleFor(x => x.FirstName).NotEmpty().MaximumLength(100);
-        RuleFor(x => x.Email).NotEmpty().EmailAddress();
-    }
-}
-```
+* `ICommand<TResponse>` — Write operations
+* `ICommandHandler<TCommand, TResponse>` — Handles commands
+* `IQuery<TResponse>` — Read operations
+* `IQueryHandler<TQuery, TResponse>` — Handles queries
+
+The Delete Course command uses:
+
+
+ICommand<Result>
+
+
+because a successful DELETE returns no data.
 
 ---
 
-## Seed Data
+# Seed Data
 
-The API automatically seeds the following data on startup:
+The API automatically seeds the following data on startup.
 
-**Students:**
+## Students
 
-- John Doe (john.doe@example.com)
-- Jane Smith (jane.smith@example.com)
+* John Doe
+* Jane Smith
 
-**Courses:**
+## Courses
 
-- Introduction to Programming (CS101, 3 credits)
-- Data Structures (CS201, 4 credits)
-- Database Systems (CS301, 3 credits)
-
----
-
-## Common Mistakes to Avoid
-
-1. **Don't use MediatR** — This project uses custom ICommand/IQuery
-2. **Don't throw exceptions** — Return Result.Failure() instead
-3. **Don't skip validation** — Always add a validator
-4. **Don't forget to register** — Add `app.Map{FeatureGroup}Endpoints()` in Program.cs
-5. **Don't put business logic in endpoints** — Handlers do the work
-6. **Don't use controllers** — This project uses Minimal APIs
-7. **Don't use Repository pattern** — Use DbContext directly
+* Introduction to Programming — CS101 — 3 credits
+* Data Structures — CS201 — 4 credits
+* Database Systems — CS301 — 3 credits
 
 ---
 
-## Resources
+# Common Mistakes to Avoid
 
-- [Vertical Slice Architecture by Jimmy Bogard](https://www.jimmybogard.com/vertical-slice-architecture/)
-- [CodeWithMukesh Clean Architecture Template](https://github.com/iammukeshm/CleanArchitecture.WebApi)
-- [FluentValidation Documentation](https://docs.fluentvalidation.net/)
-- [Minimal APIs in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis)
-- [Scalar API Documentation](https://scalar.com/)
+1. **Don't use MediatR** — The project uses custom ICommand/IQuery.
+2. **Don't throw exceptions for expected business errors** — Use Result.
+3. **Don't skip validation.**
+4. **Don't forget endpoint registration in Program.cs.**
+5. **Don't put business logic in endpoints** — Handlers do the work.
+6. **Don't use controllers** — The project uses Minimal APIs.
+7. **Don't use Repository pattern** — Use DbContext directly.
+8. **Don't delete a course that is already used by an admission.**
 
 ---
 
-## License
+
+
+# License
 
 This project is for educational purposes.
 
